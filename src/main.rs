@@ -1,11 +1,19 @@
 mod line_creator;
+
+use line_creator::LineItem;
 use std::{fs, io};
 
-// next step:
-// create struct for containing each entry and sort by type
 fn main() -> io::Result<()> {
+    let mut directory_entries: Vec<LineItem> = Vec::new();
+
     for entry in fs::read_dir(".")? {
-        println!("{}", line_creator::create_line(entry?.path())?);
+        directory_entries.push(LineItem::from_path_buf(entry?.path())?);
+    }
+
+    directory_entries.sort();
+
+    for entry in directory_entries {
+        println!("{}", &entry);
     }
 
     Ok(())
