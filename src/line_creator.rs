@@ -5,7 +5,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::fmt;
 use std::cmp::Ordering;
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 pub enum LineItemType {
     Directory,
     File
@@ -96,3 +96,26 @@ impl PartialEq for LineItem {
 }
 
 impl Eq for LineItem {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn constructs_file_item_from_path_buf() {
+        let path_buf = PathBuf::from("Cargo.toml");
+        let item = LineItem::from_path_buf(path_buf).expect("");
+        
+        assert_eq!(item.item_type, LineItemType::File);
+        assert_eq!(item.name, "Cargo.toml");
+    }
+
+    #[test]
+    fn constructs_dir_item_from_path_buf() {
+        let path_buf = PathBuf::from(".git");
+        let item = LineItem::from_path_buf(path_buf).expect("");
+        
+        assert_eq!(item.item_type, LineItemType::Directory);
+        assert_eq!(item.name, ".git");
+    }
+}
