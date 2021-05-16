@@ -29,8 +29,9 @@ impl LineItem {
     pub fn from_path_buf(path: PathBuf) -> Result<LineItem, io::Error> {
         let item_type = if path.is_dir() { LineItemType::Directory } else { LineItemType::File };
         let permissions = LineItem::create_permission_string(path.metadata()?.permissions());
+        let name = path.as_path().file_name().and_then(|p| Some(p.to_string_lossy())).unwrap();
 
-        Ok(LineItem::new(item_type, permissions, path.display().to_string()))
+        Ok(LineItem::new(item_type, permissions, name.into_owned()))
     }
 
     fn create_permission_string(permissions: Permissions) -> String {
